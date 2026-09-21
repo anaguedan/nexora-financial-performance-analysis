@@ -1,0 +1,1370 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NEXORA Financial Performance Analysis — case study de Finance Analytics, FP&A y Power BI con datos simulados.">
+  <meta name="theme-color" content="#071e3f">
+  <title>NEXORA | Financial Performance Analysis</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23071e3f'/%3E%3Cpath d='M16 46V18l32 28V18' fill='none' stroke='%2338d5ef' stroke-width='6' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ink: #0b1930;
+      --muted: #566173;
+      --paper: #f5f1e8;
+      --paper-2: #ebe6dc;
+      --white: #fffdf8;
+      --navy: #061d3f;
+      --navy-2: #0a2e60;
+      --cyan: #17bfdc;
+      --cyan-dark: #007d9c;
+      --cyan-soft: #d8f6f8;
+      --blue-soft: #e2ebf4;
+      --red: #b74d4c;
+      --green: #16785f;
+      --line: rgba(11, 25, 48, .17);
+      --shadow: 0 24px 70px rgba(7, 30, 63, .15);
+      --radius: 1.25rem;
+      --page: min(92vw, 90rem);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      overflow-x: clip;
+    }
+
+    body {
+      margin: 0;
+      min-width: 20rem;
+      overflow-x: clip;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 92% 8%, rgba(23, 191, 220, .11), transparent 24rem),
+        var(--paper);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 1rem;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+    }
+
+    body.lightbox-open { overflow: hidden; }
+
+    img { display: block; max-width: 100%; height: auto; }
+    button, a { font: inherit; }
+    a { color: inherit; }
+
+    :focus-visible {
+      outline: .2rem solid var(--cyan);
+      outline-offset: .25rem;
+    }
+
+    .skip-link {
+      position: fixed;
+      z-index: 90;
+      left: 1rem;
+      top: -5rem;
+      padding: .7rem 1rem;
+      background: var(--white);
+      color: var(--ink);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+    }
+
+    .skip-link:focus { top: 1rem; }
+
+    .back-link {
+      position: fixed;
+      z-index: 30;
+      top: 1rem;
+      left: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      min-height: 2.75rem;
+      padding: .65rem 1rem;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 999px;
+      color: white;
+      background: rgba(6, 29, 63, .92);
+      box-shadow: 0 .6rem 1.8rem rgba(6, 29, 63, .18);
+      text-decoration: none;
+      font-size: .85rem;
+      font-weight: 750;
+      backdrop-filter: blur(12px);
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .back-link:hover { transform: translateY(-2px); background: var(--navy-2); }
+    .back-link span { font-size: 1.15rem; line-height: 1; }
+
+    .container { width: var(--page); margin-inline: auto; }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      min-height: min(54rem, 92svh);
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      color: white;
+      background: var(--navy);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -2;
+      inset: 0;
+      background:
+        linear-gradient(115deg, transparent 0 57%, rgba(23, 191, 220, .08) 57% 58%, transparent 58%),
+        radial-gradient(circle at 82% 20%, rgba(23, 191, 220, .24), transparent 28rem),
+        linear-gradient(145deg, #061932 0%, #071e3f 54%, #09326a 100%);
+    }
+
+    .hero::after {
+      content: "N";
+      position: absolute;
+      z-index: -1;
+      right: -1.5rem;
+      bottom: -13rem;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(255, 255, 255, .08);
+      font-size: clamp(26rem, 52vw, 48rem);
+      font-weight: 850;
+      line-height: .8;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(17rem, .65fr);
+      gap: clamp(3rem, 7vw, 8rem);
+      align-items: end;
+      padding: clamp(8rem, 15vh, 11rem) 0 clamp(4rem, 8vh, 6.5rem);
+    }
+
+    .eyebrow, .section-kicker, .mini-label {
+      margin: 0 0 1.15rem;
+      color: var(--cyan);
+      font-size: .76rem;
+      font-weight: 800;
+      letter-spacing: .19em;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      max-width: 13ch;
+      margin: 0;
+      font-size: clamp(3.5rem, 8.4vw, 8rem);
+      font-weight: 780;
+      letter-spacing: -.065em;
+      line-height: .86;
+    }
+
+    .hero h1 span {
+      display: block;
+      max-width: 16ch;
+      margin-top: 1.35rem;
+      color: #bfeef4;
+      font-size: clamp(1.45rem, 2.9vw, 2.9rem);
+      font-weight: 460;
+      letter-spacing: -.035em;
+      line-height: 1.05;
+    }
+
+    .hero-subtitle {
+      max-width: 46rem;
+      margin: 2rem 0 0;
+      color: rgba(255, 255, 255, .75);
+      font-size: clamp(1rem, 1.5vw, 1.24rem);
+      line-height: 1.65;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+      margin: 2rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tags li {
+      padding: .45rem .72rem;
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 999px;
+      color: rgba(255, 255, 255, .88);
+      font-size: .76rem;
+      font-weight: 650;
+    }
+
+    .hero-aside {
+      position: relative;
+      padding: 2rem 0 0 2rem;
+      border-left: 1px solid rgba(255, 255, 255, .2);
+    }
+
+    .hero-aside::before {
+      content: "";
+      position: absolute;
+      left: -.22rem;
+      top: 0;
+      width: .4rem;
+      height: 2rem;
+      background: var(--cyan);
+    }
+
+    .hero-aside strong {
+      display: block;
+      max-width: 16ch;
+      margin-bottom: 3.5rem;
+      color: white;
+      font-size: clamp(1.4rem, 2.2vw, 2rem);
+      letter-spacing: -.03em;
+      line-height: 1.2;
+    }
+
+    .transparency-note {
+      margin: 0;
+      color: rgba(255, 255, 255, .62);
+      font-size: .82rem;
+      line-height: 1.55;
+    }
+
+    main { overflow: clip; }
+
+    .section { padding: clamp(5rem, 10vw, 9rem) 0; }
+    .section--tight { padding-top: clamp(3.5rem, 7vw, 6rem); }
+    .section--navy { color: white; background: var(--navy); }
+    .section--blue { background: var(--blue-soft); }
+    .section--white { background: var(--white); }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(14rem, .65fr) minmax(0, 1.35fr);
+      gap: clamp(2rem, 6vw, 7rem);
+      align-items: start;
+      margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+    }
+
+    .section-head h2, .editorial-title {
+      margin: 0;
+      max-width: 17ch;
+      font-size: clamp(2rem, 4.4vw, 4.5rem);
+      font-weight: 720;
+      letter-spacing: -.055em;
+      line-height: .98;
+    }
+
+    .section-head p {
+      max-width: 44rem;
+      margin: .1rem 0 0;
+      color: var(--muted);
+      font-size: clamp(1.03rem, 1.55vw, 1.3rem);
+      line-height: 1.72;
+    }
+
+    .section--navy .section-head p { color: rgba(255, 255, 255, .7); }
+    .section--navy .section-kicker { color: #57d9ed; }
+
+    .image-frame {
+      margin: 0;
+      border-radius: var(--radius);
+      background: var(--navy);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .image-frame__bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      padding: .9rem 1.1rem;
+      color: rgba(255, 255, 255, .72);
+      border-bottom: 1px solid rgba(255, 255, 255, .12);
+      font-size: .76rem;
+      font-weight: 650;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .image-frame__bar span:last-child { color: #74e2f0; }
+
+    .image-button {
+      display: block;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: zoom-in;
+    }
+
+    .image-button img {
+      width: 100%;
+      transition: transform .45s cubic-bezier(.2,.7,.2,1), filter .3s ease;
+    }
+
+    .image-button:hover img { transform: scale(1.008); filter: brightness(1.04); }
+
+    .image-frame figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+      padding: 1.1rem 1.25rem 1.25rem;
+      color: rgba(255, 255, 255, .67);
+      font-size: .84rem;
+    }
+
+    .image-frame figcaption strong { color: white; font-weight: 700; }
+
+    .answers-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: clamp(2rem, 6vw, 7rem);
+      align-items: start;
+      margin-top: clamp(3rem, 6vw, 5rem);
+    }
+
+    .question-number {
+      color: var(--cyan-dark);
+      font-size: clamp(4rem, 8vw, 7.5rem);
+      font-weight: 780;
+      letter-spacing: -.07em;
+      line-height: .8;
+    }
+
+    .answers-grid h3 {
+      margin: 0 0 1.5rem;
+      font-size: clamp(1.6rem, 3vw, 2.7rem);
+      letter-spacing: -.04em;
+      line-height: 1.12;
+    }
+
+    .topic-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--line);
+      list-style: none;
+    }
+
+    .topic-list li {
+      padding: .8rem 1rem .8rem 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .9rem;
+      font-weight: 650;
+    }
+
+    .core-question {
+      margin: 3rem 0 0;
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      border-left: .35rem solid var(--cyan);
+      background: var(--white);
+      font-size: clamp(1.35rem, 2.4vw, 2.2rem);
+      font-weight: 680;
+      letter-spacing: -.03em;
+      line-height: 1.28;
+    }
+
+    .kpi-context {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 1.5rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .kpi-context p { max-width: 45rem; margin: 0; color: var(--muted); }
+
+    .context-pill {
+      flex: none;
+      padding: .48rem .8rem;
+      color: var(--cyan-dark);
+      border: 1px solid rgba(0, 125, 156, .3);
+      border-radius: 999px;
+      font-size: .73rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+    }
+
+    .kpi {
+      min-height: 14.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: clamp(1.3rem, 2.6vw, 2.25rem);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .42);
+    }
+
+    .kpi:nth-child(1), .kpi:nth-child(2) { background: var(--cyan-soft); }
+    .kpi-label { font-weight: 720; }
+    .kpi-value {
+      margin: .5rem 0;
+      font-size: clamp(2.1rem, 4vw, 3.7rem);
+      font-weight: 760;
+      letter-spacing: -.055em;
+      line-height: 1;
+    }
+
+    .delta { font-size: .88rem; font-weight: 800; }
+    .delta--up { color: var(--green); }
+    .delta--down { color: var(--red); }
+
+    .story-banner {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1.25fr;
+      align-items: center;
+      gap: 1.1rem;
+      margin-bottom: clamp(3.5rem, 7vw, 6rem);
+      padding: clamp(1.5rem, 4vw, 3rem);
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(23, 191, 220, .1), rgba(255, 255, 255, .025));
+    }
+
+    .story-word small {
+      display: block;
+      color: rgba(255,255,255,.5);
+      font-size: .68rem;
+      font-weight: 750;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .story-word strong {
+      display: block;
+      margin-top: .25rem;
+      font-size: clamp(1.7rem, 3.4vw, 3.4rem);
+      letter-spacing: -.05em;
+      line-height: 1;
+    }
+
+    .story-word:last-child strong { color: #ff9998; }
+    .story-arrow { color: var(--cyan); font-size: 2rem; }
+
+    .finding-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255, 255, 255, .16);
+      border: 1px solid rgba(255, 255, 255, .16);
+    }
+
+    .finding {
+      min-height: 10.5rem;
+      padding: 1.5rem;
+      background: var(--navy);
+    }
+
+    .finding span { color: rgba(255,255,255,.62); font-size: .8rem; font-weight: 650; }
+    .finding strong { display: block; margin-top: .7rem; font-size: 1.8rem; letter-spacing: -.04em; }
+    .finding--warning strong { color: #ff9998; }
+    .finding--good strong { color: #67e5be; }
+
+    .analysis-note {
+      display: grid;
+      grid-template-columns: .8fr 1.2fr;
+      gap: 3rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, .18);
+    }
+
+    .analysis-note h3 { margin: 0; font-size: 1.2rem; }
+    .analysis-note p { margin: 0; color: rgba(255, 255, 255, .68); }
+
+    .plan-layout {
+      display: grid;
+      grid-template-columns: .85fr 1.4fr;
+      gap: clamp(3rem, 7vw, 7rem);
+      align-items: start;
+    }
+
+    .concept-pair { display: grid; gap: 1rem; }
+
+    .concept-card {
+      padding: 1.6rem;
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .concept-card:first-child { border-top: .3rem solid var(--cyan); }
+    .concept-card:last-child { border-top: .3rem solid var(--navy); }
+    .concept-card h3 { margin: 0 0 .4rem; font-size: 1.2rem; }
+    .concept-card p { margin: 0; color: var(--muted); }
+
+    .variance-list { border-top: 1px solid var(--line); }
+
+    .variance-row {
+      display: grid;
+      grid-template-columns: 1fr auto minmax(10rem, .65fr);
+      gap: 1.2rem;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .variance-row strong:nth-child(2) { font-variant-numeric: tabular-nums; }
+    .variance-row span { color: var(--muted); font-size: .86rem; text-align: right; }
+
+    .caution {
+      margin: 2.5rem 0 0;
+      padding: 1.4rem 1.5rem;
+      border-left: .3rem solid var(--cyan-dark);
+      background: var(--blue-soft);
+      font-size: .94rem;
+    }
+
+    .cascade-wrap {
+      display: grid;
+      grid-template-columns: minmax(18rem, .9fr) minmax(0, 1.1fr);
+      gap: clamp(3rem, 7vw, 8rem);
+      align-items: center;
+    }
+
+    .cascade {
+      display: grid;
+      justify-items: center;
+      max-width: 32rem;
+      padding: clamp(1.5rem, 4vw, 3rem);
+      border-radius: var(--radius);
+      background: var(--navy);
+      box-shadow: var(--shadow);
+    }
+
+    .cascade-item {
+      width: 100%;
+      padding: .7rem 1rem;
+      color: white;
+      border: 1px solid rgba(255,255,255,.18);
+      text-align: center;
+      font-size: .88rem;
+      font-weight: 750;
+    }
+
+    .cascade-item--result { color: var(--navy); background: #82e7f0; border-color: #82e7f0; }
+    .cascade-arrow { padding: .2rem; color: var(--cyan); font-size: 1rem; line-height: 1; }
+
+    .formulas { display: grid; gap: 0; border-top: 1px solid var(--line); }
+
+    .formula {
+      display: grid;
+      grid-template-columns: minmax(10rem, .7fr) 1.3fr;
+      gap: 2rem;
+      padding: 1.15rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .formula strong { color: var(--cyan-dark); }
+    .formula span { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: .9rem; }
+
+    .logic-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 5rem);
+    }
+
+    .logic-panel {
+      padding: clamp(1.5rem, 3vw, 2.5rem);
+      border: 1px solid rgba(255, 255, 255, .16);
+      background: rgba(255,255,255,.035);
+    }
+
+    .logic-panel h3 { margin: 0 0 1rem; font-size: 1.35rem; }
+    .logic-panel p { margin: 0 0 1rem; color: rgba(255,255,255,.67); }
+    .logic-panel code { color: #88e8f2; font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1px;
+      margin-top: 1.5rem;
+      background: rgba(255,255,255,.17);
+      border: 1px solid rgba(255,255,255,.17);
+    }
+
+    .matrix span {
+      padding: .7rem .35rem;
+      background: var(--navy);
+      color: rgba(255,255,255,.82);
+      text-align: center;
+      font-size: .72rem;
+      font-weight: 700;
+    }
+
+    .signal-examples { display: grid; gap: .8rem; margin-top: 1.5rem; }
+
+    .signal {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .8rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.14);
+      font-size: .87rem;
+    }
+
+    .signal span:last-child { font-weight: 800; }
+    .signal--good span:last-child { color: #67e5be; }
+    .signal--bad span:last-child { color: #ff9998; }
+
+    .model-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(17rem, .55fr);
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: start;
+    }
+
+    .model-figure { background: #e4e2e0; }
+    .model-figure .image-frame__bar { background: var(--navy); }
+    .model-figure figcaption { color: var(--muted); background: var(--white); }
+    .model-figure figcaption strong { color: var(--ink); }
+
+    .table-groups { display: grid; gap: 2rem; }
+    .table-groups h3 { margin: 0 0 .8rem; font-size: 1rem; }
+    .table-groups ul { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+    .table-groups li { padding: .6rem 0; border-bottom: 1px solid var(--line); color: var(--muted); font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: .82rem; overflow-wrap: anywhere; }
+
+    .data-flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+      gap: .55rem;
+      align-items: center;
+      margin-top: 3.5rem;
+      padding: 1.5rem;
+      color: white;
+      background: var(--navy);
+      border-radius: var(--radius);
+    }
+
+    .data-flow span:not(.flow-arrow) { text-align: center; font-size: .78rem; font-weight: 750; }
+    .flow-arrow { color: var(--cyan); }
+    .source-stack small { display: block; color: #99dfe9; font-size: .68rem; font-weight: 600; }
+
+    .code-grid { display: grid; gap: 1.5rem; }
+
+    .code-card {
+      display: grid;
+      grid-template-columns: minmax(12rem, .58fr) minmax(0, 1.42fr);
+      border: 1px solid var(--line);
+      background: var(--white);
+    }
+
+    .code-card__intro { padding: clamp(1.3rem, 3vw, 2.2rem); }
+    .code-card__intro h3 { margin: 0 0 .65rem; font-size: 1.3rem; }
+    .code-card__intro p { margin: 0; color: var(--muted); font-size: .92rem; }
+
+    pre {
+      min-width: 0;
+      margin: 0;
+      padding: clamp(1.3rem, 3vw, 2.2rem);
+      overflow-x: auto;
+      color: #ddf9fb;
+      background: var(--navy);
+      font: .9rem/1.7 ui-monospace, "SFMono-Regular", Consolas, monospace;
+      tab-size: 4;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .tech-list { border-top: 1px solid var(--line); }
+
+    .tech-item {
+      display: grid;
+      grid-template-columns: minmax(11rem, .7fr) 1.3fr;
+      gap: 2rem;
+      padding: 1.35rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tech-item strong { font-size: 1.05rem; }
+    .tech-item p { margin: 0; color: var(--muted); }
+
+    .drivers {
+      position: relative;
+      color: white;
+      background:
+        radial-gradient(circle at 85% 10%, rgba(23,191,220,.25), transparent 25rem),
+        var(--navy);
+    }
+
+    .drivers::after {
+      content: "02";
+      position: absolute;
+      right: 4vw;
+      top: 2rem;
+      color: rgba(255,255,255,.05);
+      font-size: clamp(9rem, 22vw, 20rem);
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .drivers .container { position: relative; z-index: 1; }
+
+    .drivers-title {
+      max-width: 18ch;
+      margin: 0;
+      font-size: clamp(2.5rem, 6.5vw, 6rem);
+      letter-spacing: -.06em;
+      line-height: .95;
+    }
+
+    .drivers-subtitle {
+      margin: 1.4rem 0 3rem;
+      color: var(--cyan);
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: .18em;
+    }
+
+    .drivers-copy {
+      max-width: 46rem;
+      color: rgba(255,255,255,.7);
+      font-size: 1.05rem;
+    }
+
+    .driver-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .7rem;
+      margin: 2.5rem 0 4rem;
+    }
+
+    .driver-tags span {
+      padding: .55rem .8rem;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.045);
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .story-flow {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr auto 1fr;
+      gap: 1.2rem;
+      align-items: stretch;
+    }
+
+    .story-step {
+      min-height: 12rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 1.4rem;
+      border: 1px solid rgba(255,255,255,.17);
+      background: rgba(255,255,255,.04);
+    }
+
+    .story-step small { color: var(--cyan); font-weight: 800; letter-spacing: .13em; }
+    .story-step strong { font-size: 1.25rem; line-height: 1.3; }
+    .story-step span { color: rgba(255,255,255,.6); font-size: .82rem; }
+    .story-step--focus { background: rgba(23,191,220,.12); }
+    .story-flow > .flow-arrow { align-self: center; font-size: 1.5rem; }
+
+    .development-note {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      margin: 2.5rem 0 0;
+      color: rgba(255,255,255,.62);
+      font-size: .82rem;
+    }
+
+    .development-note::before {
+      content: "";
+      width: .55rem;
+      height: .55rem;
+      border: 2px solid var(--cyan);
+      border-radius: 50%;
+    }
+
+    .capabilities {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+
+    .capability { padding: clamp(1.5rem, 4vw, 3rem); background: var(--white); }
+    .capability h3 { margin: 0 0 1.6rem; color: var(--cyan-dark); font-size: .8rem; letter-spacing: .14em; }
+    .capability ul { columns: 2; column-gap: 2rem; margin: 0; padding: 0; list-style: none; }
+    .capability li { break-inside: avoid; padding: .45rem 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
+
+    .closing {
+      color: white;
+      background: #04172f;
+    }
+
+    .closing blockquote {
+      max-width: 22ch;
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 5.2rem);
+      font-weight: 520;
+      letter-spacing: -.055em;
+      line-height: 1.05;
+    }
+
+    .closing-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 2rem;
+      margin-top: clamp(4rem, 9vw, 8rem);
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,.18);
+    }
+
+    .closing-footer p { margin: 0; color: rgba(255,255,255,.55); font-size: .8rem; }
+
+    .closing-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: .7rem;
+      padding-bottom: .25rem;
+      color: #8ce8f2;
+      border-bottom: 1px solid currentColor;
+      text-decoration: none;
+      font-weight: 780;
+    }
+
+    .lightbox {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+      display: none;
+      place-items: center;
+      padding: clamp(1rem, 3vw, 2.5rem);
+      background: rgba(2, 11, 25, .94);
+      backdrop-filter: blur(12px);
+    }
+
+    .lightbox[aria-hidden="false"] { display: grid; }
+
+    .lightbox__dialog {
+      position: relative;
+      width: min(96vw, 100rem);
+      max-height: 92vh;
+      display: grid;
+      justify-items: center;
+    }
+
+    .lightbox__image {
+      max-width: 100%;
+      max-height: 84vh;
+      object-fit: contain;
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 2rem 6rem rgba(0,0,0,.45);
+    }
+
+    .lightbox__caption {
+      margin: .8rem 3.5rem 0;
+      color: rgba(255,255,255,.76);
+      font-size: .82rem;
+      text-align: center;
+    }
+
+    .lightbox__close {
+      position: absolute;
+      z-index: 2;
+      top: -1rem;
+      right: -1rem;
+      width: 3rem;
+      height: 3rem;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      color: white;
+      border: 1px solid rgba(255,255,255,.35);
+      border-radius: 50%;
+      background: var(--navy-2);
+      cursor: pointer;
+      font-size: 1.45rem;
+      line-height: 1;
+    }
+
+    @media (max-width: 62rem) {
+      .hero { min-height: auto; }
+      .hero-inner { grid-template-columns: 1fr; gap: 3.5rem; }
+      .hero-aside { max-width: 32rem; }
+      .section-head, .answers-grid, .plan-layout, .cascade-wrap, .model-layout { grid-template-columns: 1fr; }
+      .section-head h2 { max-width: 19ch; }
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .finding-grid { grid-template-columns: repeat(2, 1fr); }
+      .analysis-note { grid-template-columns: 1fr; gap: 1rem; }
+      .logic-grid { grid-template-columns: 1fr; }
+      .data-flow { grid-template-columns: 1fr; justify-items: center; }
+      .data-flow .flow-arrow { transform: rotate(90deg); }
+      .story-flow { grid-template-columns: 1fr; }
+      .story-flow > .flow-arrow { justify-self: center; transform: rotate(90deg); }
+      .code-card { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 43rem) {
+      :root { --page: min(89vw, 90rem); }
+      body { font-size: .98rem; }
+      .back-link { top: .7rem; left: .7rem; min-height: 2.55rem; padding: .58rem .8rem; font-size: .76rem; }
+      .hero-inner { padding-top: 7rem; padding-bottom: 4rem; }
+      .hero h1 { font-size: clamp(3.1rem, 18vw, 5rem); }
+      .hero h1 span { margin-top: 1rem; font-size: clamp(1.35rem, 7.5vw, 2rem); }
+      .hero-aside { padding-left: 1.3rem; }
+      .section { padding-block: 4.5rem; }
+      .section-head { gap: 1.25rem; margin-bottom: 2.5rem; }
+      .section-head h2, .editorial-title { font-size: clamp(2.15rem, 10vw, 3.4rem); }
+      .image-frame { width: calc(100% + 6vw); margin-left: -3vw; border-radius: .85rem; }
+      .image-frame__bar { padding: .75rem .8rem; font-size: .63rem; }
+      .image-frame figcaption { display: block; padding: .9rem; font-size: .74rem; }
+      .image-frame figcaption span { display: block; margin-top: .3rem; }
+      .topic-list { grid-template-columns: repeat(2, 1fr); }
+      .kpi-context { align-items: start; flex-direction: column; }
+      .kpi-grid { grid-template-columns: 1fr; }
+      .kpi { min-height: 11.5rem; }
+      .story-banner { grid-template-columns: 1fr; gap: .7rem; }
+      .story-arrow { transform: rotate(90deg); justify-self: start; }
+      .finding-grid { grid-template-columns: 1fr; }
+      .finding { min-height: auto; }
+      .variance-row { grid-template-columns: 1fr auto; gap: .5rem 1rem; }
+      .variance-row span { grid-column: 1 / -1; text-align: left; }
+      .cascade { max-width: none; }
+      .formula, .tech-item { grid-template-columns: 1fr; gap: .45rem; }
+      .matrix { grid-template-columns: 1fr; }
+      .matrix span { text-align: left; padding-inline: .8rem; }
+      .table-groups { grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .code-card { width: calc(100% + 4vw); margin-left: -2vw; }
+      .capabilities { grid-template-columns: 1fr; }
+      .capability ul { columns: 1; }
+      .closing-footer { align-items: start; flex-direction: column-reverse; }
+      .lightbox { padding: .75rem; }
+      .lightbox__close { top: .35rem; right: .35rem; width: 2.75rem; height: 2.75rem; }
+      .lightbox__image { max-height: 78vh; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <a class="back-link" href="https://anaguedan.github.io/" aria-label="Volver al portfolio de Ana Guedán"><span aria-hidden="true">←</span> Volver al portfolio</a>
+
+  <header class="hero">
+    <div class="container hero-inner">
+      <div>
+        <p class="eyebrow">Proyecto 02 · Finance Analytics · Power BI</p>
+        <h1>NEXORA <span>Financial Performance Analysis</span></h1>
+        <p class="hero-subtitle">Finance Analytics case study focused on profitability, P&amp;L performance, Actual vs Last Year and Actual vs Plan analysis.</p>
+        <ul class="tags" aria-label="Tecnologías y áreas de análisis">
+          <li>Power BI</li><li>Finance Analytics</li><li>FP&amp;A</li><li>Controlling</li>
+          <li>DAX</li><li>Data Modelling</li><li>P&amp;L Analysis</li><li>Budget Analysis</li>
+        </ul>
+      </div>
+      <aside class="hero-aside" aria-label="Pregunta central y transparencia">
+        <p class="mini-label">Business question</p>
+        <strong>¿Cómo está evolucionando el negocio y qué está ocurriendo con la rentabilidad?</strong>
+        <p class="transparency-note">Proyecto de portfolio desarrollado con una empresa ficticia y datos simulados.</p>
+      </aside>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <section class="section section--tight section--white" aria-labelledby="dashboard-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">01 · Executive layer</p>
+            <h2 id="dashboard-title">Executive Financial Dashboard</h2>
+          </div>
+          <p>La primera capa responde <strong>WHAT HAPPENED?</strong> y concentra performance financiero, evolución YoY, Actual vs Plan, rentabilidad, distribución geográfica y contribución por producto.</p>
+        </div>
+
+        <figure class="image-frame">
+          <div class="image-frame__bar"><span>Power BI · Executive view</span><span>Ampliar ↗</span></div>
+          <button class="image-button" type="button" data-lightbox="assets/images/executive-financial-dashboard.png" data-caption="NEXORA — Executive Financial Dashboard" aria-label="Ampliar el Executive Financial Dashboard">
+            <img src="assets/images/executive-financial-dashboard.png" alt="Dashboard ejecutivo de NEXORA con KPIs financieros, detalle de P&amp;L, tendencia de revenue, distribución por país y gross profit por categoría." width="1528" height="846">
+          </button>
+          <figcaption><strong>Executive Financial Dashboard</strong><span>Selecciona la imagen para verla a tamaño ampliado.</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="question-title">
+      <div class="container">
+        <div class="answers-grid">
+          <div><span class="question-number" aria-hidden="true">01</span></div>
+          <div>
+            <p class="section-kicker">Business question</p>
+            <h2 class="editorial-title" id="question-title">Revenue es el punto de partida, no la conclusión.</h2>
+            <p>El objetivo no es únicamente saber si Revenue sube o baja, sino entender cómo evolucionan las ventas, la rentabilidad y el cumplimiento del presupuesto —y qué señales aparecen por producto y mercado.</p>
+            <ul class="topic-list" aria-label="Áreas del análisis">
+              <li>Gross Sales</li><li>Revenue</li><li>Gross Profit</li>
+              <li>Gross Margin</li><li>Margin after Freight</li><li>Actual vs Last Year</li>
+              <li>Actual vs Plan</li><li>Discounts &amp; Returns</li><li>COGS &amp; Freight</li>
+              <li>Product</li><li>Market</li><li>Profitability</li>
+            </ul>
+            <p class="core-question">¿Cómo puede crecer el negocio y, al mismo tiempo, deteriorarse su rentabilidad?</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--blue" aria-labelledby="kpis-title">
+      <div class="container">
+        <div class="kpi-context">
+          <div>
+            <p class="section-kicker">Executive KPIs</p>
+            <h2 class="editorial-title" id="kpis-title">La foto financiera.</h2>
+          </div>
+          <span class="context-pill">Current filtered view</span>
+        </div>
+        <div class="kpi-grid">
+          <article class="kpi"><span class="kpi-label">Gross Sales</span><strong class="kpi-value">≈ 1.40 M€</strong><span class="delta delta--up">↑ 9.09% YoY</span></article>
+          <article class="kpi"><span class="kpi-label">Revenue</span><strong class="kpi-value">≈ 1.27 M€</strong><span class="delta delta--up">↑ 5.77% YoY</span></article>
+          <article class="kpi"><span class="kpi-label">Gross Profit</span><strong class="kpi-value">≈ 423.54 K€</strong><span class="delta delta--down">↓ 10.56% YoY</span></article>
+          <article class="kpi"><span class="kpi-label">Gross Margin</span><strong class="kpi-value">≈ 33.4%</strong><span class="delta delta--down">↓ 6.09 pp YoY</span></article>
+          <article class="kpi"><span class="kpi-label">Margin after Freight</span><strong class="kpi-value">≈ 401.52 K€</strong><span class="delta delta--down">↓ 11.39% YoY</span></article>
+          <article class="kpi"><span class="kpi-label">Margin after Freight %</span><strong class="kpi-value">≈ 31.6%</strong><span class="delta delta--down">↓ 6.12 pp YoY</span></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--navy" aria-labelledby="compression-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Core finding</p>
+            <h2 id="compression-title">From sales growth to margin compression</h2>
+          </div>
+          <p>La vista muestra crecimiento en la parte alta de la cuenta de resultados, pero una evolución opuesta en beneficio y margen.</p>
+        </div>
+
+        <div class="story-banner" aria-label="Sales suben, Revenue sube, pero Profitability baja">
+          <div class="story-word"><small>Sales</small><strong>↑ 9.09%</strong></div>
+          <span class="story-arrow" aria-hidden="true">→</span>
+          <div class="story-word"><small>Revenue</small><strong>↑ 5.77%</strong></div>
+          <span class="story-arrow" aria-hidden="true">→</span>
+          <div class="story-word"><small>But profitability</small><strong>↓</strong></div>
+        </div>
+
+        <div class="finding-grid">
+          <div class="finding finding--warning"><span>Discounts · YoY</span><strong>≈ +46%</strong></div>
+          <div class="finding finding--warning"><span>Returns · YoY</span><strong>≈ +173%</strong></div>
+          <div class="finding finding--warning"><span>COGS · YoY</span><strong>≈ +16%</strong></div>
+          <div class="finding finding--warning"><span>Gross Profit · YoY</span><strong>−10.56%</strong></div>
+          <div class="finding finding--warning"><span>Gross Margin</span><strong>−6.09 pp</strong></div>
+          <div class="finding finding--warning"><span>Margin after Freight</span><strong>−11.39%</strong></div>
+          <div class="finding finding--good"><span>Gross Sales · YoY</span><strong>+9.09%</strong></div>
+          <div class="finding finding--good"><span>Revenue · YoY</span><strong>+5.77%</strong></div>
+        </div>
+
+        <div class="analysis-note">
+          <h3>Lectura prudente</h3>
+          <p>Gross Sales aumenta y Revenue también, aunque a menor ritmo. Al mismo tiempo, Discounts y Returns crecen significativamente y COGS lo hace mucho más rápido que Revenue. Esta evolución coincide con una caída de Gross Profit y una compresión de Gross Margin; la vista identifica la señal, no atribuye todavía una causalidad definitiva.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="plan-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Budget analysis</p>
+            <h2 id="plan-title">Actual vs Plan</h2>
+          </div>
+          <p>Una desviación muestra una <strong>dirección</strong>; su lectura financiera exige determinar también su <strong>favorabilidad</strong>.</p>
+        </div>
+
+        <div class="plan-layout">
+          <div class="concept-pair">
+            <article class="concept-card"><h3>Direction</h3><p>Qué ocurrió: la métrica quedó por encima o por debajo del Plan.</p></article>
+            <article class="concept-card"><h3>Favorability</h3><p>Qué significa: si la desviación resulta favorable o desfavorable para el negocio.</p></article>
+          </div>
+          <div>
+            <div class="variance-list" aria-label="Variaciones aproximadas frente al plan">
+              <div class="variance-row"><strong>Revenue</strong><strong>≈ −48%</strong><span>Desfavorable</span></div>
+              <div class="variance-row"><strong>Gross Profit</strong><strong>≈ −52%</strong><span>Desfavorable</span></div>
+              <div class="variance-row"><strong>Margin after Freight</strong><strong>≈ −53%</strong><span>Desfavorable</span></div>
+              <div class="variance-row"><strong>COGS</strong><strong>≈ −46%</strong><span>Coste absoluto bajo Plan</span></div>
+              <div class="variance-row"><strong>Freight</strong><strong>≈ −19%</strong><span>Coste absoluto bajo Plan</span></div>
+            </div>
+            <p class="caution"><strong>Context matters.</strong> Un coste absoluto inferior al Plan no demuestra por sí solo eficiencia si Revenue también está muy por debajo del presupuesto. La lectura debe completarse con márgenes, relaciones coste/revenue, unit economics y mix.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--white" aria-labelledby="pnl-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Financial architecture</p>
+            <h2 id="pnl-title">P&amp;L logic</h2>
+          </div>
+          <p>La cascada ordena la lógica financiera desde la venta bruta hasta el margen disponible después del coste de transporte.</p>
+        </div>
+        <div class="cascade-wrap">
+          <div class="cascade" aria-label="Cascada de P y L">
+            <div class="cascade-item">Gross Sales</div><div class="cascade-arrow" aria-hidden="true">↓</div>
+            <div class="cascade-item">− Discounts</div><div class="cascade-arrow" aria-hidden="true">↓</div>
+            <div class="cascade-item">− Returns</div><div class="cascade-arrow" aria-hidden="true">↓</div>
+            <div class="cascade-item cascade-item--result">Revenue</div><div class="cascade-arrow" aria-hidden="true">↓</div>
+            <div class="cascade-item">− COGS</div><div class="cascade-arrow" aria-hidden="true">↓</div>
+            <div class="cascade-item cascade-item--result">Gross Profit</div><div class="cascade-arrow" aria-hidden="true">↓</div>
+            <div class="cascade-item">− Freight Cost</div><div class="cascade-arrow" aria-hidden="true">↓</div>
+            <div class="cascade-item cascade-item--result">Margin after Freight</div>
+          </div>
+          <div class="formulas">
+            <div class="formula"><strong>Revenue</strong><span>Gross Sales − Discounts − Returns</span></div>
+            <div class="formula"><strong>Gross Profit</strong><span>Revenue − COGS</span></div>
+            <div class="formula"><strong>Gross Margin %</strong><span>Gross Profit / Revenue</span></div>
+            <div class="formula"><strong>Margin after Freight</strong><span>Gross Profit − Freight Cost</span></div>
+            <div class="formula"><strong>Margin after Freight %</strong><span>Margin after Freight / Revenue</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--navy" aria-labelledby="dynamic-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Reporting logic</p>
+            <h2 id="dynamic-title">Dynamic P&amp;L</h2>
+          </div>
+          <p>Una tabla auxiliar desconectada controla las filas de la P&amp;L y permite que la misma estructura de reporting cambie según el contexto.</p>
+        </div>
+        <div class="logic-grid">
+          <article class="logic-panel">
+            <h3>Una estructura, múltiples vistas</h3>
+            <p><strong>P&amp;L Lines</strong> y <strong>P&amp;L Waterfall Lines</strong> organizan la presentación. Conceptualmente, <code>SWITCH()</code> y <code>SELECTEDVALUE()</code> seleccionan la medida correspondiente a cada fila.</p>
+            <div class="matrix" aria-label="Vistas dinámicas de la P y L"><span>Actual</span><span>Last Year</span><span>YoY %</span><span>Plan</span><span>Vs Plan %</span></div>
+          </article>
+          <article class="logic-panel">
+            <h3>Signo ≠ color</h3>
+            <p>El signo indica qué ocurrió. El color interpreta si esa evolución es favorable o desfavorable desde el punto de vista financiero.</p>
+            <div class="signal-examples">
+              <div class="signal signal--good"><span>Revenue +5.77%</span><span>Favorable · verde</span></div>
+              <div class="signal signal--bad"><span>COGS +16.41%</span><span>Desfavorable · rojo</span></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="model-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Data modelling</p>
+            <h2 id="model-title">A shared dimensional model</h2>
+          </div>
+          <p>Actual y Plan no necesitan conectarse directamente entre sí. La comparación se construye a través de dimensiones compartidas y medidas DAX.</p>
+        </div>
+
+        <div class="model-layout">
+          <figure class="image-frame model-figure">
+            <div class="image-frame__bar"><span>Power BI · Model view</span><span>Ampliar ↗</span></div>
+            <button class="image-button" type="button" data-lightbox="assets/images/data-model.png" data-caption="NEXORA — Modelo dimensional" aria-label="Ampliar el modelo de datos">
+              <img src="assets/images/data-model.png" alt="Modelo de datos de NEXORA con tablas de ventas, plan, calendario, producto, mercado, cliente, medidas y tablas auxiliares de P&amp;L." width="1260" height="632">
+            </button>
+            <figcaption><strong>Dimensional model</strong><span>Actual y Plan se comparan mediante dimensiones compartidas.</span></figcaption>
+          </figure>
+          <aside class="table-groups" aria-label="Tablas visibles en el modelo">
+            <div>
+              <h3>Core model</h3>
+              <ul><li>Fact_Sales_Ledger</li><li>Fact_Plan_2026</li><li>Calendar</li><li>Dim_Product_Catalog</li><li>Dim_Market_map</li><li>Dim_Customer</li><li>Medidas</li></ul>
+            </div>
+            <div>
+              <h3>Disconnected helpers</h3>
+              <ul><li>P&amp;L Lines</li><li>P&amp;L Waterfall Lines</li></ul>
+            </div>
+          </aside>
+        </div>
+
+        <div class="data-flow" aria-label="Flujo conceptual desde los datos hasta los insights">
+          <span class="source-stack">Transactional sales <small>+ Financial plan</small></span><span class="flow-arrow" aria-hidden="true">→</span>
+          <span>Shared dimensions</span><span class="flow-arrow" aria-hidden="true">→</span>
+          <span>DAX measures</span><span class="flow-arrow" aria-hidden="true">→</span>
+          <span>Financial reporting<br>→ Business insights</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--blue" aria-labelledby="dax-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">DAX</p>
+            <h2 id="dax-title">Financial logic in measures</h2>
+          </div>
+          <p>Tres ejemplos muestran cálculo transaccional, inteligencia temporal y comparación relativa con división segura.</p>
+        </div>
+        <div class="code-grid">
+          <article class="code-card"><div class="code-card__intro"><h3>COGS</h3><p>Base financial calculation at transaction level.</p></div><pre><code>COGS =
+SUMX(
+    Fact_Sales_Ledger,
+    Fact_Sales_Ledger[Units]
+    * Fact_Sales_Ledger[UnitCost]
+)</code></pre></article>
+          <article class="code-card"><div class="code-card__intro"><h3>Gross Profit LY</h3><p>Time intelligence / same comparable period.</p></div><pre><code>Gross Profit LY =
+CALCULATE(
+    [Gross Profit],
+    SAMEPERIODLASTYEAR('Calendar'[Date])
+)</code></pre></article>
+          <article class="code-card"><div class="code-card__intro"><h3>Gross Profit YoY %</h3><p>Relative year-over-year change with safe division.</p></div><pre><code>Gross Profit YoY % =
+DIVIDE(
+    [Gross Profit] - [Gross Profit LY],
+    ABS([Gross Profit LY])
+)</code></pre></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--white" aria-labelledby="implementation-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Technical implementation</p>
+            <h2 id="implementation-title">Built for analysis and reuse</h2>
+          </div>
+          <p>La capa técnica aporta estructura, consistencia y velocidad de implementación; el trabajo analítico permanece en el centro de la solución.</p>
+        </div>
+        <div class="tech-list">
+          <div class="tech-item"><strong>Power Query</strong><p>Preparation, cleaning and structure before modelling.</p></div>
+          <div class="tech-item"><strong>Dimensional Model</strong><p>Shared dimensions connect the analytical context between Actual and Plan.</p></div>
+          <div class="tech-item"><strong>DAX</strong><p>Financial logic and analytical calculations.</p></div>
+          <div class="tech-item"><strong>Time Intelligence</strong><p>Last Year and YoY comparison for the same comparable period.</p></div>
+          <div class="tech-item"><strong>Disconnected Helper Tables</strong><p>Dynamic P&amp;L and waterfall reporting logic.</p></div>
+          <div class="tech-item"><strong>Conditional Formatting</strong><p>A visual distinction between direction and favorability.</p></div>
+          <div class="tech-item"><strong>Power BI JSON Theme</strong><p>A consistent visual language applied efficiently across the report.</p></div>
+          <div class="tech-item"><strong>Reusable Dashboard Template</strong><p>Faster layout implementation and greater design consistency. The template standardises presentation; it does not replace the analytical work.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section drivers" aria-labelledby="drivers-title">
+      <div class="container">
+        <p class="section-kicker">Next analytical layer</p>
+        <h2 class="drivers-title" id="drivers-title">Performance Drivers / Unit Economics</h2>
+        <p class="drivers-subtitle">WHY DID IT HAPPEN?</p>
+        <p class="drivers-copy">La siguiente capa profundiza en los drivers que pueden ayudar a explicar la compresión de margen. Su objetivo es pasar de la señal financiera a la investigación de volumen, precio, coste y mix.</p>
+        <div class="driver-tags" aria-label="Drivers a investigar">
+          <span>Units / volume</span><span>Effective Unit Price</span><span>Unit Cost</span><span>Price–Cost spread</span><span>Discounts</span><span>Returns</span><span>Freight per unit</span><span>Unit margin</span><span>Product mix</span><span>Product / category</span><span>Country / market</span><span>Channel</span>
+        </div>
+        <div class="story-flow">
+          <article class="story-step"><small>PAGE 1 · WHAT HAPPENED?</small><strong>Revenue / Profit / Margin / Plan / YoY</strong><span>Executive financial view</span></article>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <article class="story-step story-step--focus"><small>IDENTIFY THE ISSUE</small><strong>Growth and profitability move in different directions.</strong><span>Analytical bridge</span></article>
+          <span class="flow-arrow" aria-hidden="true">→</span>
+          <article class="story-step"><small>DRIVER ANALYSIS · WHY?</small><strong>Volume / Price / Cost / Discount / Returns / Freight / Mix</strong><span>Deeper investigation</span></article>
+        </div>
+        <p class="development-note">Analytical driver layer currently being developed.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="demonstrates-title">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Capabilities</p>
+            <h2 id="demonstrates-title">What this project demonstrates</h2>
+          </div>
+          <p>Una intersección entre construcción de producto analítico, reporting financiero y razonamiento de negocio.</p>
+        </div>
+        <div class="capabilities">
+          <article class="capability">
+            <h3>DATA &amp; BI</h3>
+            <ul><li>Power BI</li><li>Power Query</li><li>Data modelling</li><li>DAX</li><li>Filter context</li><li>Time intelligence</li><li>Dynamic measures</li><li>Disconnected helper tables</li><li>Conditional formatting</li><li>Data visualization</li><li>Analytical storytelling</li></ul>
+          </article>
+          <article class="capability">
+            <h3>FINANCE / FP&amp;A / CONTROLLING</h3>
+            <ul><li>P&amp;L analysis</li><li>Actual vs LY</li><li>Actual vs Plan</li><li>Budget monitoring</li><li>Variance analysis</li><li>Revenue analysis</li><li>COGS</li><li>Gross Profit</li><li>Gross Margin</li><li>Freight</li><li>Profitability analysis</li><li>Business driver investigation</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="section closing">
+    <div class="container">
+      <p class="section-kicker">Closing thought</p>
+      <blockquote>The objective is not only to report financial performance, but to connect financial metrics with the business drivers behind profitability.</blockquote>
+      <div class="closing-footer">
+        <p>NEXORA is a fictional company. All data shown is simulated.</p>
+        <a class="closing-cta" href="https://anaguedan.github.io/"><span aria-hidden="true">←</span> Volver al portfolio</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="lightbox-caption">
+    <div class="lightbox__dialog">
+      <button class="lightbox__close" type="button" aria-label="Cerrar imagen ampliada">×</button>
+      <img class="lightbox__image" src="assets/images/executive-financial-dashboard.png" alt="">
+      <p class="lightbox__caption" id="lightbox-caption"></p>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const lightbox = document.querySelector('#lightbox');
+      const image = lightbox.querySelector('.lightbox__image');
+      const caption = lightbox.querySelector('.lightbox__caption');
+      const closeButton = lightbox.querySelector('.lightbox__close');
+      const triggers = document.querySelectorAll('[data-lightbox]');
+      let previousFocus = null;
+      let scrollBarWidth = 0;
+
+      const openLightbox = (trigger) => {
+        previousFocus = trigger;
+        image.src = trigger.dataset.lightbox;
+        image.alt = trigger.querySelector('img').alt;
+        caption.textContent = trigger.dataset.caption;
+        scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+        if (scrollBarWidth > 0) document.body.style.paddingRight = `${scrollBarWidth}px`;
+        document.body.classList.add('lightbox-open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        closeButton.focus();
+      };
+
+      const closeLightbox = () => {
+        if (lightbox.getAttribute('aria-hidden') === 'true') return;
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('lightbox-open');
+        document.body.style.paddingRight = '';
+        if (previousFocus) previousFocus.focus();
+      };
+
+      triggers.forEach((trigger) => trigger.addEventListener('click', () => openLightbox(trigger)));
+      closeButton.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) closeLightbox();
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeLightbox();
+        if (event.key === 'Tab' && lightbox.getAttribute('aria-hidden') === 'false') {
+          event.preventDefault();
+          closeButton.focus();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
